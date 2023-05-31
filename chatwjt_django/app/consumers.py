@@ -92,6 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             star = data['star']
             id1 = self.get_id()
             self.add_chat(data=content)
+            print(content)
 
             ai_response = await self.response(star)
 
@@ -198,7 +199,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     completion_text += content
                     response = {'id': id, 'sender': 1, 'content': content, 'star': True}
                     response = json.dumps(response)
-                    await asyncio.sleep(0.00001)
+                    await asyncio.sleep(0.001)
                     await self.send(response)
             return completion_text
         except:
