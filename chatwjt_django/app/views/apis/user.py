@@ -69,7 +69,6 @@ def forget(request):
     ser = ForgetSerializer(data=request.data)
     if not ser.is_valid():
         return Response({'code': 400, 'msg': ser.errors})
-    print(ser.data)
     user = CustomUser.objects.filter(email=ser.data['email']).first()
     if not user:
         return Response({'code': 401, 'msg': '修改失败, 该用户不存在'})
@@ -81,7 +80,6 @@ def forget(request):
 
 @api_view(['get'])
 def home(request):
-    print(request.user)
     user = request.user
     invite_code = user.invite.code
     invite_number = user.invite.claimed_by

@@ -125,7 +125,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_chat_list(self, label):
         chat_label = self.Chat_label.objects.filter(user=self.user, label=label).first()
         if chat_label:
-            chat_records = chat_label.chat_records.order_by('-created_at')[:20]
+            chat_records = chat_label.chat_records.order_by('-created_at')[:100]
             self.len = len(chat_records)
             for chat_record in reversed(chat_records):
                 _chat = {

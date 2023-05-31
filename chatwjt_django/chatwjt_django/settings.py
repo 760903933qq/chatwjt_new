@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-m*dt8hl2o@3_*to@zwuz8^b(xn5#*(ri3w%b$pnf+0(i6_u*au"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['chatwjt.com', 'www.chatwjt.com', '127.0.0.1']
 
 
 # Application definition
@@ -145,7 +145,7 @@ EMAIL_HOST_USER = '760903933@qq.com'
 EMAIL_HOST_PASSWORD = 'qdyrsequpgcobbga'
 
 # 测试环境允许跨域访问
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True
 
 # 使用customUser
 AUTH_USER_MODEL = 'app.CustomUser'
@@ -182,3 +182,7 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# CSRF配置
+# CSRF_TRUSTED_ORIGINS = ['www.chatwjt.com']
+CSRF_TRUSTED_ORIGINS = ['https://www.chatwjt.com:444']

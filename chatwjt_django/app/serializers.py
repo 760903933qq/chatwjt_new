@@ -66,7 +66,6 @@ class LoginSerializer(serializers.Serializer):
         password = data.get('password')
 
         user = authenticate(username=username, password=password)
-        print(username, password)
         if not user:
             raise serializers.ValidationError('用户名密码不匹配')
 
