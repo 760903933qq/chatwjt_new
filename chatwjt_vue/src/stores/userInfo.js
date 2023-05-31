@@ -14,7 +14,9 @@ export const useUserStore = defineStore(
     // 2. 定义获取接口数据的action函数
     const getUserInfo = async (data) => {
       const res = await loginAPI(data)
+      if (res.code !== 200) return res.code
       userInfo.value = res.data
+      return res.code
     }
     // 3. logout用户退出登录
     const logout = () => {

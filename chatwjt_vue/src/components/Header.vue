@@ -35,6 +35,7 @@ const username = ref(userStore.userInfo.username)
 watch(
   () => userStore.userInfo,
   (newUserInfo) => {
+    if (!newUserInfo) return
     isLoggedIn.value = newUserInfo.token ? true : false
     username.value = newUserInfo.username
   }

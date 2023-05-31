@@ -50,9 +50,10 @@ const rules = reactive({
 const userStore = useUserStore()
 const router = useRouter()
 const onSubmit = async () => {
-  await userStore.getUserInfo(form)
-  router.push('/')
-  //   router.push('/')
+  const res = await userStore.getUserInfo(form)
+  if (res === 200) {
+    router.push('/')
+  }
 }
 
 const handleClick = () => {

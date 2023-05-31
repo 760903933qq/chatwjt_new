@@ -3,7 +3,8 @@ import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/userInfo'
 import axios from 'axios'
 const httpInstance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/',
+  baseURL: 'https://chatwjt.com:443/api/',
+  // baseURL: 'http://127.0.0.1:8000/api/',
   timeout: 5000
 })
 

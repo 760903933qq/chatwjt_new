@@ -55,15 +55,18 @@
         >
           <div v-for="(item, index) in messages" :key="index">
             <el-row align="middle" class="userMessage message" v-if="item.sender === 0">
-              <el-col :span="1" :offset="1">
-                <img src="@/assets/images/小狗.svg" alt="" style="width: 40px" />
+              <el-col
+                :span="1"
+                :offset="1"
+                style="display: flex; justify-content: center; margin-left: 10px"
+              >
+                <img src="@/assets/images/小狗.svg" alt="" style="width: 30px" />
               </el-col>
-              <el-col :span="18" :offset="1">
+              <el-col :span="19" :offset="1">
                 <!-- 用户消息 -->
-
-                <div v-html="marked.parse(item.content)" style="padding: 10px"></div>
+                <div style="padding: 3px">{{ item.content }}</div>
               </el-col>
-              <el-col :span="1" :offset="1">
+              <el-col :span="1" :offset="1" style="display: flex; justify-content: end">
                 <el-button
                   v-if="!item.star"
                   type="primary"
@@ -76,14 +79,14 @@
               </el-col>
             </el-row>
             <el-row align="middle" class="aiMessage message" v-else>
-              <el-col :span="1" :offset="1">
-                <img src="@/assets/images/青蛙.svg" alt="" style="width: 40px" />
+              <el-col :span="1" style="display: flex; justify-content: center; margin-left: 10px">
+                <img src="@/assets/images/青蛙.svg" alt="" style="width: 30px" />
               </el-col>
-              <el-col :span="18" :offset="1" style="overflow-x: auto">
+              <el-col :span="19" :offset="1" style="overflow-x: auto">
                 <!-- AI回复 -->
-                <div v-html="marked.parse(item.content)" style="padding: 10px"></div>
+                <div v-html="marked.parse(item.content)" style="padding: 3px"></div>
               </el-col>
-              <el-col :span="1" :offset="1">
+              <el-col :span="1" :offset="1" style="display: flex; justify-content: end">
                 <el-button
                   v-if="!item.star"
                   type="primary"
@@ -109,11 +112,16 @@
                 borderRadius: '0'
               }"
               class="my-input"
+              :disabled="sendbtn"
             />
             <div class="inputbutton">
-              <button type="submit" class="el-button el-button--primary" style="height: 100%">
+              <el-button
+                class="el-button el-button--primary"
+                style="height: 100%"
+                :disabled="sendbtn"
+              >
                 发送
-              </button>
+              </el-button>
             </div>
           </div>
         </form>
@@ -160,6 +168,7 @@ import { Delete, List } from '@element-plus/icons-vue'
 import { useWebSocket } from '@vueuse/core'
 import { useUserStore } from '@/stores/userInfo'
 import { useRouter } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
 // 显示markdown格式
 import { marked } from 'marked'
 import { mangle } from 'marked-mangle'
@@ -173,21 +182,47 @@ const router = useRouter()
 async function getRight() {
   const res = await rightAPI()
   if (res.code === 200) {
+    ElMessage({
+      message: '登陆成功',
+      type: 'success'
+    })
+
     return
+  } else if (res.code === 202) {
+    router.push('/user/login')
   } else {
     router.push('/user/')
   }
 }
 
-getRight()
+getRight().then(() => {
+  if (localStorage.getItem('notification') === 'confirmed') {
+    return
+  } else {
+    ElMessageBox.alert(
+      '\t\t\t\t\t我们进行了一个大的版本更新, 优化了您的体验, 但不幸的是您的聊天数据并没有迁移到新的版本, 我们决定继续运行旧版本直到6月7日,因此您可以选择去旧版本处理您的数据, 您可以复制以下网址跳转到旧版本(请注意这条消息只会弹出一次, 因此请务必保存好旧版本的网址):\n\nhttps://www.chatwjt.com:444',
+      '通知',
+      {
+        confirmButtonText: 'OK',
+        callback: () => {
+          localStorage.setItem('notification', 'confirmed')
+        }
+      }
+    )
+  }
+})
 
 const options = {
   prefix: 'my-prefix-'
 }
 const originalWarn = console.warn
 console.warn = function (msg) {
-  if (!msg.includes('sanitize and sanitizer parameters are deprecated')) {
-    originalWarn.apply(console, arguments)
+  if (msg) {
+    if (typeof msg === 'string') {
+      if (!msg.includes('sanitize and sanitizer parameters are deprecated')) {
+        originalWarn.apply(console, arguments)
+      }
+    }
   }
 }
 marked.use(
@@ -219,7 +254,8 @@ function scrollToBottom() {
   messagesEnd.value.scrollTop = messagesEnd.value.scrollHeight
 }
 const token = userStore.userInfo.token
-const { send, data } = useWebSocket('ws://localhost:8000/ws/chat', {
+const { send, data } = useWebSocket('wss://www.chatwjt.com:443/ws/chat', {
+  // const { send, data } = useWebSocket('ws://127.0.0.1:8000/ws/chat', {
   onMessage: () => {
     const message = data.value
     if (message === 'pong') {
@@ -336,4 +372,9 @@ const confirmNew = () => {
 const delLabel = () => {
   send('delLabel0dha0shd10nv09isad-34' + ' ' + label.value)
 }
+
+// 发送按钮是否激活
+const sendbtn = computed(() => {
+  return labels.value.length <= 0 // 判断列表是否有值
+})
 </script>

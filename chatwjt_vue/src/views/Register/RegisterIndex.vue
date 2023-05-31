@@ -29,7 +29,9 @@
                 <el-input v-model="form.captcha" />
               </el-col>
               <el-col :span="3">
-                <el-button @click="captcha">获取验证码</el-button>
+                <el-button :disabled="cap" @click="captcha">{{
+                  countdown > 0 ? `${countdown}s` : '获取验证码'
+                }}</el-button>
               </el-col>
             </el-row>
           </el-form-item>
@@ -43,7 +45,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { registerAPI } from '@/apis/user'
 import { captchaAPI } from '@/apis/user'
 import { useRouter } from 'vue-router'
@@ -93,15 +95,32 @@ const rules = reactive({
 
 const router = useRouter()
 const register = async () => {
-  await registerAPI(form)
-  router.push('/user/login')
+  const res = await registerAPI(form)
+  if (res.code === 200) {
+    router.push('/user/login')
+  } else {
+    console.log(res)
+  }
 }
+
+// 验证码60s
+const cap = ref(false)
+let countdown = ref(0)
 
 const captcha = () => {
   const email = form.email
-
   const res = captchaAPI(email)
-  console.log(res)
+  if (res) {
+    countdown.value = 60
+    cap.value = true
+    const timer = setInterval(() => {
+      countdown.value--
+      if (countdown.value === 0) {
+        cap.value = false
+        clearInterval(timer)
+      }
+    }, 1000)
+  }
 }
 </script>
 
